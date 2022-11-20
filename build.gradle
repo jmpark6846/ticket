@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.5'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+
 }
 
 group = 'com.example'
@@ -12,6 +14,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -19,6 +22,13 @@ repositories {
 }
 
 dependencies {
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.7.5'
+    implementation group: 'com.querydsl', name: 'querydsl-jpa', version: '5.0.0'
+    implementation group: 'com.querydsl', name: 'querydsl-apt', version: '5.0.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10'
+    implementation 'io.springfox:springfox-boot-starter:3.0.0' // swagger
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // jpa
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -30,4 +40,23 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// QueryDSL 관련 설정
+def querydslDir = "$buildDir/generated/querydsl"    // QClass 생성 위치
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+// QClass가 생성된 위치를 나타냅니다
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+// querydsl 컴파일 시 사용할 옵션 설정 (gradle 5.0 이상 시 설정)
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
 }
