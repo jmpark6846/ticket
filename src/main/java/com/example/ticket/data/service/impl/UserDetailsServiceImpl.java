@@ -1,25 +1,39 @@
 package com.example.ticket.data.service.impl;
 
+import com.example.ticket.data.dto.UserDto;
+import com.example.ticket.data.entity.User;
 import com.example.ticket.data.repository.UserRepository;
 import com.example.ticket.data.service.UserDetailsSerivce;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.java.Log;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Log
 @RequiredArgsConstructor
 @Service
 public class UserDetailsServiceImpl implements UserDetailsSerivce {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
     private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        LOGGER.info("[loadUserByUsername] loadUserByUsername 수행. username: {}", username);
-        return userRepository.getByUid(username);
+        User user = userRepository.getByUid(username);
+
+        log.info("loadUserByUsername: " + username);
+
+        UserDto dto = new UserDto(
+                user.getUid(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+
+        log.info(dto.toString());
+        return dto;
+
     }
 }

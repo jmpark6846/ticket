@@ -72,13 +72,15 @@ public class JwtTokenProvider {
         return request.getHeader("X-AUTH-TOKEN");
     }
 
+    public Jws<Claims> getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
+    }
     public boolean validateToken(String token){
         try{
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
-
+            Jws<Claims> claims = getClaims(token);
             return !claims.getBody().getExpiration().before(new Date());
         }catch(Exception e){
             return false;

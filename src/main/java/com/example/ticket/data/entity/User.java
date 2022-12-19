@@ -17,13 +17,11 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 
 @Entity
 @Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Table(name = "user")
+@ToString
+@Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,31 +46,26 @@ public class User implements UserDetails {
         return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    @JsonProperty(access = WRITE_ONLY)
     @Override
     public String getUsername() {
         return this.uid;
     }
 
-    @JsonProperty(access = WRITE_ONLY)
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @JsonProperty(access = WRITE_ONLY)
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @JsonProperty(access = WRITE_ONLY)
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @JsonProperty(access = WRITE_ONLY)
     @Override
     public boolean isEnabled() {
         return true;
